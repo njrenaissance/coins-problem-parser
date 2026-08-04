@@ -46,6 +46,9 @@ show_missing = true
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+# ruff >=0.16 formats Python inside Markdown code blocks; keep the formatter off
+# prose docs (incl. template-managed .claude/*.md) so it governs source only.
+extend-exclude = ["**/*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "N", "ARG", "SIM", "ERA", "PLR", "C901"]
