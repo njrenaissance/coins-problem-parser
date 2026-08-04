@@ -6,6 +6,16 @@ requires-python = ">=3.13"
 dependencies = [
 ]
 
+[project.scripts]
+fakecoin = "fakecoin.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fakecoin"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
