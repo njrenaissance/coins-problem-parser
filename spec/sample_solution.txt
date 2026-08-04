@@ -1,0 +1,76 @@
+(* ============================================================
+   Solution:  N = 12 coins, X = 3 weighings, direction unknown
+   Coins labeled 1..12. Exactly one is fake.
+   ============================================================ *)
+
+weigh( {1,2,3,4} vs {5,6,7,8} ) {
+
+  (* ---- BALANCED: fake is in {9,10,11,12}, 1..8 are known-genuine ---- *)
+  balance:
+    weigh( {9,10,11} vs {1,2,3} ) {          (* 1,2,3 are known-good references *)
+      left>:                                   (* 9|10|11 heavy *)
+        weigh( {9} vs {10} ) {
+          left>   : fake(9,heavier) ;
+          balance : fake(11,heavier) ;
+          right>  : fake(10,heavier) ;
+        } ;
+      balance:                                 (* fake is 12, direction unknown *)
+        weigh( {12} vs {1} ) {
+          left>   : fake(12,heavier) ;
+          balance : genuine ;                  (* unreachable: 12 is the fake *)
+          right>  : fake(12,lighter) ;
+        } ;
+      right>:                                  (* 9|10|11 light *)
+        weigh( {9} vs {10} ) {
+          left>   : fake(10,lighter) ;
+          balance : fake(11,lighter) ;
+          right>  : fake(9,lighter) ;
+        } ;
+    } ;
+
+  (* ---- LEFT HEAVY: one of {1,2,3,4} heavy, or one of {5,6,7,8} light ---- *)
+  left>:
+    weigh( {1,2,5} vs {3,4,6} ) {              (* 7,8 held aside *)
+      left>:                                    (* hyp: 1h, 2h, or 6l *)
+        weigh( {1} vs {2} ) {
+          left>   : fake(1,heavier) ;
+          balance : fake(6,lighter) ;
+          right>  : fake(2,heavier) ;
+        } ;
+      balance:                                  (* fake in {7,8}, both light *)
+        weigh( {7} vs {8} ) {
+          left>   : fake(8,lighter) ;
+          balance : genuine ;                   (* unreachable *)
+          right>  : fake(7,lighter) ;
+        } ;
+      right>:                                   (* hyp: 3h, 4h, or 5l *)
+        weigh( {3} vs {4} ) {
+          left>   : fake(3,heavier) ;
+          balance : fake(5,lighter) ;
+          right>  : fake(4,heavier) ;
+        } ;
+    } ;
+
+  (* ---- RIGHT HEAVY: one of {5,6,7,8} heavy, or one of {1,2,3,4} light ---- *)
+  right>:
+    weigh( {5,6,1} vs {7,8,2} ) {              (* 3,4 held aside *)
+      left>:                                    (* hyp: 5h, 6h, or 2l *)
+        weigh( {5} vs {6} ) {
+          left>   : fake(5,heavier) ;
+          balance : fake(2,lighter) ;
+          right>  : fake(6,heavier) ;
+        } ;
+      balance:                                  (* fake in {3,4}, both light *)
+        weigh( {3} vs {4} ) {
+          left>   : fake(4,lighter) ;
+          balance : genuine ;                   (* unreachable *)
+          right>  : fake(3,lighter) ;
+        } ;
+      right>:                                   (* hyp: 7h, 8h, or 1l *)
+        weigh( {7} vs {8} ) {
+          left>   : fake(7,heavier) ;
+          balance : fake(1,lighter) ;
+          right>  : fake(8,heavier) ;
+        } ;
+    } ;
+}

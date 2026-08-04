@@ -1,0 +1,11 @@
+solution      = strategy<X> ;
+
+strategy<0>   = conclusion ;                     (* out of weighings: must conclude *)
+strategy<k>   = conclusion | weighing<k> ;       (* k >= 1 *)
+
+weighing<k>   = "weigh" "(" pan "vs" pan ")"
+                "{"
+                   "left>"   ":" strategy<k-1> ";"
+                   "balance" ":" strategy<k-1> ";"
+                   "right>"  ":" strategy<k-1> ";"
+                "}" ;
