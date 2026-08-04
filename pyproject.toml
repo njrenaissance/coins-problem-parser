@@ -6,8 +6,12 @@ requires-python = ">=3.13"
 dependencies = [
 ]
 
+[project.optional-dependencies]
+lsp = ["pygls>=1.3,<2"]
+
 [project.scripts]
 fakecoin = "fakecoin.cli:main"
+fakecoin-lsp = "fakecoin.lsp.server:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -24,6 +28,7 @@ dev = [
     "ruff>=0.9.0",
     "mypy>=1.13.0",
     "pre-commit>=4.0.0",
+    "pygls>=1.3,<2",
 ]
 
 [tool.pytest.ini_options]
