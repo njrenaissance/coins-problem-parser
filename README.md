@@ -162,23 +162,46 @@ print(report.failures)  # the worlds (if any) that went wrong
 │       ├── evaluator.py      # simulate a strategy against every world
 │       ├── cli.py            # `fakecoin` command-line tool
 │       ├── errors.py         # FakeCoinError / LexError / ParseError
-│       └── tokens.py         # Token + TokenType
+│       ├── tokens.py         # Token + TokenType
+│       └── lsp/              # optional LSP language server (pygls)
+│           ├── features.py   #   text -> diagnostics / completions (pure)
+│           └── server.py     #   pygls wiring + stdio entry point
 ├── tests/
 │   ├── test_lexer.py
 │   ├── test_parser.py
 │   ├── test_evaluator.py     # the all-worlds sweep
-│   └── test_cli.py
+│   ├── test_cli.py
+│   └── test_lsp.py
+├── docs/adr/                 # architecture decision records
 └── pyproject.toml
 ```
 
-## Future work: an editor language server (LSP)
+## Editor support (LSP)
 
-A natural next step is a [pygls](https://github.com/openlawlibrary/pygls)-based
-language server for the DSL — reusing this parser to surface `ParseError`
-positions as editor diagnostics and to offer keyword completion (`weigh`,
-`left>`, `balance`, `right>`, `fake`, `genuine`, `heavier`, `lighter`). It is
-deferred for now; adding it introduces a runtime dependency and is worth an ADR
-when tackled.
+A [pygls](https://github.com/openlawlibrary/pygls)-based **language server**
+reuses this parser to give any LSP-capable editor live feedback on `.coin`
+solutions:
+
+- **Diagnostics** — `LexError` / `ParseError` become editor errors at their exact
+  source line/column, updated as you type.
+- **Completion** — the DSL keywords (`weigh`, `vs`, `left>`, `balance`, `right>`,
+  `fake`, `genuine`, `heavier`, `lighter`).
+
+pygls is an **optional** dependency — the core parser/evaluator stay
+dependency-free. Install the extra, then run the server over stdio:
+
+```bash
+uv sync --extra lsp                  # or: pip install 'recursive-parser[lsp]'
+uv run python -m fakecoin.lsp        # or the installed `fakecoin-lsp` script
+```
+
+Point your editor's generic LSP client at that command for the `fakecoin`
+language (in most editors, a few lines of client config). The dependency choice
+is recorded in
+[`docs/adr/0001-adopt-pygls-for-dsl-language-server.md`](docs/adr/0001-adopt-pygls-for-dsl-language-server.md).
+
+**Still to come:** a packaged editor extension (e.g. a VS Code client) and richer
+features (hover, go-to-definition) — see issue #4.
 
 ## Setup
 
